@@ -6,7 +6,7 @@ defmodule MGSWeb.API.V1.EmailController do
   def send(conn, params) do
     response =
       with {:ok, email} <- Mailer.email_from_map(params),
-           %Bamboo.Email{} <- Mailer.deliver_now(email) do
+           %Bamboo.Email{} <- Mailer.send(email) do
         %{"status" => "ok", "error" => nil}
       else
         {:error, error} ->

@@ -101,7 +101,13 @@ defmodule MGS.Mailer do
     limit = Application.get_env(:mailgun_service, :hammer)
     case Hammer.check_rate("mgs:send_email", limit[:window], limit[:size]) do
       {:allow, _} ->
-        deliver_now(email)
+        try do
+          deliver_now(email)
+        catch
+          # Can be caused by non-authorized recipient email in prod
+          :error, %Bamboo.ApiError{} = e ->
+            {:error, inspect(e)}
+        end
       {:deny, _} ->
         {:error, "Rate limit exceeded, try again later"}
     end

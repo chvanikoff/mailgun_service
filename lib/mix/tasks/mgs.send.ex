@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Mgs.Send do
     Mix.Task.run("app.start", [])
 
     with {:ok, email} <- Mailer.email_from_json(json),
-         %Bamboo.Email{} <- Mailer.deliver_now(email) do
+         %Bamboo.Email{} <- Mailer.send(email) do
       IO.puts("Email have been sent to #{email.to}")
     else
       {:error, error} ->

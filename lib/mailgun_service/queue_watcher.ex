@@ -41,7 +41,7 @@ defmodule MGS.QueueWatcher do
   def handle_info({:basic_deliver, json, %{delivery_tag: tag}}, %{chan: chan} = state) do
     status =
       with {:ok, email} <- Mailer.email_from_json(json),
-           %Bamboo.Email{} <- Mailer.deliver_now(email) do
+           %Bamboo.Email{} <- Mailer.send(email) do
         :ok = Basic.ack(chan, tag)
         %{"status" => "ok", "error" => nil}
       else
