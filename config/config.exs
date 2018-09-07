@@ -12,10 +12,9 @@ config :mailgun_service,
 # Configures the endpoint
 config :mailgun_service, MGSWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "mMsMB9Et+GEK2Pxh6kYcwrgTWMv+WvXkbu+mHjp0rt0xc2Z6ACtKjtvR9lHRvBe4",
+  secret_key_base: "5W03TgclULK0obxfVtfio3WD8qABnmG2ymQtmOuDkc5uChzmH6U5w+SjFjkJhZQF",
   render_errors: [view: MGSWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: MGS.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: MGS.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -24,4 +23,4 @@ config :logger, :console,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
