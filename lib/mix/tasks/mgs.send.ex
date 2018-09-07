@@ -4,7 +4,8 @@ defmodule Mix.Tasks.Mgs.Send do
   Expects a json string to be passed with following keys:
   "to": recepient email
   "subject": message subject
-  "body": message itself
+  "template": message template
+  "assigns": assigns for template (can be omited if not required by template)
 
   Usage:
       
@@ -12,7 +13,7 @@ defmodule Mix.Tasks.Mgs.Send do
 
   Example:
 
-      mix mgs.send "{\"to\":\"recepient@mailserver.tld\",\"subject\":\"testing mail service\",\"body\":\"Hello\"}"
+      mix mgs.send "{\"to\":\"recepient@mailserver.tld\",\"subject\":\"testing mail service\",\"template\":\"welcome\"}"
 
   """
 

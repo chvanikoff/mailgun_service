@@ -10,3 +10,5 @@ config :mailgun_service, MGSWeb.Endpoint,
 config :logger, level: :warn
 
 config :mailgun_service, MGS.Mailer, adapter: Bamboo.TestAdapter
+
+config :bamboo, :refute_timeout, 100
