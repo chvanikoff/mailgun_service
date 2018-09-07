@@ -7,6 +7,8 @@ defmodule MGS.Mailer do
 
   use Bamboo.Phoenix, view: MGSWeb.EmailView
 
+  @templates_dir "lib/mailgun_service_web/templates/email"
+
   @doc """
   Convert json with email params into Bamboo email struct.
 
@@ -66,12 +68,14 @@ defmodule MGS.Mailer do
         |> Map.get("assigns", [])
         |> Enum.into([], fn {k, v} -> {String.to_existing_atom(k), v} end)
 
-      template =
-        template
-        |> String.downcase()
-        |> String.to_existing_atom()
-
-      {:ok, render(email, template, assigns)}
+      with tpl <- templates() |> Enum.find(&(&1 == template)),
+           tpl = String.to_atom(tpl) do
+        {:ok, render(email, tpl, assigns)}
+      else
+        e ->
+          IO.inspect {:ERROR, e}
+          {:error, "Template \"#{template}\" not found"}
+      end
     catch
       # atom with template name doesn't exist
       :error, :badarg ->
@@ -99,6 +103,7 @@ defmodule MGS.Mailer do
   @spec send(Bamboo.Email.t()) :: Bamboo.Email.t() | {:error, String.t()}
   def send(%Bamboo.Email{} = email) do
     limit = Application.get_env(:mailgun_service, :hammer)
+
     case Hammer.check_rate("mgs:send_email", limit[:window], limit[:size]) do
       {:allow, _} ->
         try do
@@ -108,6 +113,7 @@ defmodule MGS.Mailer do
           :error, %Bamboo.ApiError{} = e ->
             {:error, inspect(e)}
         end
+
       {:deny, _} ->
         {:error, "Rate limit exceeded, try again later"}
     end
@@ -120,6 +126,9 @@ defmodule MGS.Mailer do
   """
   @spec templates() :: [atom()]
   def templates() do
-    [:welcome, :password_reset]
+    @templates_dir
+    |> File.ls!()
+    |> Enum.map(&String.replace(&1, ~r/\.(html|text)\.eex/, ""))
+    |> Enum.uniq()
   end
 end

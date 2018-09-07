@@ -119,29 +119,30 @@ defmodule MGS.MailerTest do
 
   describe "Rate-limit" do
     setup do
+      config = Application.get_env(:mailgun_service, :hammer)
       on_exit(fn -> {:ok, _} = Hammer.delete_buckets("mgs:send_email") end)
-      :ok
+      {:ok, %{config: config}}
     end
 
-    test "Returns error when limit exceeded" do
+    test "Returns error when limit exceeded", %{config: config} do
       json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: @attrs.template})
 
       {:ok, email} = Mailer.email_from_json(json)
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      Enum.each(1..config[:size], fn _ ->
+        assert match?(%Bamboo.Email{}, Mailer.send(email))
+      end)
       assert Mailer.send(email) == {:error, "Rate limit exceeded, try again later"}
     end
 
-    test "Recovers" do
+    test "Recovers", %{config: config} do
       json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: @attrs.template})
 
       {:ok, email} = Mailer.email_from_json(json)
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
-      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      Enum.each(1..config[:size], fn _ ->
+        assert match?(%Bamboo.Email{}, Mailer.send(email))
+      end)
       assert Mailer.send(email) == {:error, "Rate limit exceeded, try again later"}
-      Process.sleep(500)
+      Process.sleep(config[:window])
       assert match?(%Bamboo.Email{}, Mailer.send(email))
     end
   end
