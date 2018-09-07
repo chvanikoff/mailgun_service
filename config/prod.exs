@@ -59,6 +59,10 @@ config :logger, level: :info
 #     config :mailgun_service, MGSWeb.Endpoint, server: true
 #
 
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
+config :mailgun_service, MGSWeb.Endpoint,
+  secret_key_base: "Uobs2EQItwhzY/CgetQfOW6XQjQFcFqwhkomgJ/94jCaoRBevq1J0qW/fH9HeFg/"
+
+config :mailgun_service, MGS.Mailer,
+  adapter: Bamboo.MailgunAdapter,
+  api_key: "",
+  domain: ""

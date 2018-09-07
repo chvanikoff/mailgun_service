@@ -8,3 +8,5 @@ config :mailgun_service, MGSWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :mailgun_service, MGS.Mailer, adapter: Bamboo.TestAdapter
