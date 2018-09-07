@@ -27,6 +27,12 @@ defmodule MGSWeb.ConnCase do
   end
 
   setup _tags do
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    conn = Phoenix.ConnTest.build_conn()
+
+    opts = Application.get_env(:mailgun_service, :basic_auth)
+    auth_header = "Basic " <> Base.encode64("#{opts[:username]}:#{opts[:password]}")
+    authorized_conn = Plug.Conn.put_req_header(conn, "authorization", auth_header)
+
+    {:ok, conn: conn, authorized_conn: authorized_conn}
   end
 end

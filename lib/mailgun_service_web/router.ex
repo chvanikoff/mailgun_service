@@ -3,6 +3,7 @@ defmodule MGSWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(Plug.BasicAuth, otp_app: :mailgun_service)
   end
 
   scope "/api", MGSWeb.API, as: :api do

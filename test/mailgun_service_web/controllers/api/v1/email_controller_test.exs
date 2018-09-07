@@ -7,8 +7,21 @@ defmodule MGSWeb.API.V1.EmailControllerTest do
     template: "welcome"
   }
 
+  describe "Authorization" do
+    test "Unauthorized conn receives 401 error response", %{conn: conn} do
+      params = %{to: @attrs.to, subject: @attrs.subject, template: @attrs.template}
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post(api_v1_email_path(conn, :send), params)
+
+      assert text_response(conn, 401)
+    end
+  end
+
   describe "POST /api/v1/email" do
-    test "Sends email when params are valid", %{conn: conn} do
+    test "Sends email when params are valid", %{authorized_conn: conn} do
       params = %{to: @attrs.to, subject: @attrs.subject, template: @attrs.template}
 
       conn =
@@ -21,7 +34,7 @@ defmodule MGSWeb.API.V1.EmailControllerTest do
       assert response["error"] == nil
     end
 
-    test "Returns error when params are invalid", %{conn: conn} do
+    test "Returns error when params are invalid", %{authorized_conn: conn} do
       invalid_params = %{recipient: @attrs.to, subject: @attrs.subject, template: @attrs.template}
 
       conn =

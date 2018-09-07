@@ -29,6 +29,10 @@ config :mailgun_service, :amqp,
   queue: "mgs_queue",
   status_queue: "mgs_queue_status"
 
+config :mailgun_service, :basic_auth,
+  username: "username",
+  password: "password"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
