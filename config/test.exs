@@ -12,3 +12,7 @@ config :logger, level: :warn
 config :mailgun_service, MGS.Mailer, adapter: Bamboo.TestAdapter
 
 config :bamboo, :refute_timeout, 100
+
+config :mailgun_service, :hammer,
+  window: 500,
+  size: 3

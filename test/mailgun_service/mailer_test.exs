@@ -116,4 +116,33 @@ defmodule MGS.MailerTest do
       assert Mailer.email_from_json(json) == expected
     end
   end
+
+  describe "Rate-limit" do
+    setup do
+      on_exit(fn -> {:ok, _} = Hammer.delete_buckets("mgs:send_email") end)
+      :ok
+    end
+
+    test "Returns error when limit exceeded" do
+      json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: @attrs.template})
+
+      {:ok, email} = Mailer.email_from_json(json)
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert Mailer.send(email) == {:error, "Rate limit exceeded, try again later"}
+    end
+
+    test "Recovers" do
+      json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: @attrs.template})
+
+      {:ok, email} = Mailer.email_from_json(json)
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+      assert Mailer.send(email) == {:error, "Rate limit exceeded, try again later"}
+      Process.sleep(500)
+      assert match?(%Bamboo.Email{}, Mailer.send(email))
+    end
+  end
 end

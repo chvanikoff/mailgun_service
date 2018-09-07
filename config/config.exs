@@ -33,6 +33,20 @@ config :mailgun_service, :basic_auth,
   username: "username",
   password: "password"
 
+config :hammer,
+  backend:
+    {Hammer.Backend.ETS,
+     [
+       expiry_ms: 60_000 * 60,
+       cleanup_interval_ms: 60_000 * 10,
+       pool_size: 2,
+       pool_max_overflow: 4
+     ]}
+
+config :mailgun_service, :hammer,
+  window: 60_000,
+  size: 20
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

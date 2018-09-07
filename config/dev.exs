@@ -55,3 +55,7 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :mailgun_service, MGS.Mailer, adapter: Bamboo.LocalAdapter
+
+config :mailgun_service, :hammer,
+  window: 60_000,
+  size: 60

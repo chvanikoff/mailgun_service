@@ -1,19 +1,28 @@
 # MGS
 
-To start your Phoenix server:
+Sending email:
+```
+mix mgs.send <json>
+# Example:
+mix mgs.send "{\"to\":\"recepient@mailserver.tld\",\"subject\":\"testing mail service\",\"template\":\"welcome\"}"
+```
 
-  * Install dependencies with `mix deps.get`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+Sending email via HTTP:
+```bash
+curl -H "Content-Type: application/json" -u username:password -d $JSON http://localhost:4000/api/v1/email
+# Example:
+curl -H "Content-Type: application/json" -u username:password -d "{\"to\":\"chvanikoff@gmail.com\",\"subject\":\"testing mail service\",\"template\":\"password_reset\",\"assigns\":{\"name\":\"Roman\",\"link\":\"qwe\"}}" http://localhost:4000/api/v1/email
+```
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+RabbitMQ installation:
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+```bash
+docker run -p 15672:15672 -p 5672:5672 -d --hostname mgs-rabbit --name mgs-rabbit rabbitmq:3.7-management
+```
 
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+Sample command to put a message into RabbitMQ from cli (assuming default RabbitMQ installation described above):
+```bash
+curl -XPOST -d'{"properties":{},"routing_key":"mgs_queue","payload":$JSON,"payload_encoding":"string"}' http://guest:guest@localhost:15672/api/exchanges/%2f/mgs_exchange/publish
+# Example:
+curl -XPOST -d'{"properties":{},"routing_key":"mgs_queue","payload":"{\"to\":\"recepient@mailserver.tld\",\"subject\":\"testing mail service\",\"template\":\"welcome\"}","payload_encoding":"string"}' http://guest:guest@localhost:15672/api/exchanges/%2f/mgs_exchange/publish
+```

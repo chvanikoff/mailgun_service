@@ -94,6 +94,20 @@ defmodule MGS.Mailer do
        "Invalid keys, expected \"to\", \"subject\" and \"template\", got: #{inspect(invalid)}"}
 
   @doc """
+  A wrapper around `deliver_now/1` function to apply rate-limiting
+  """
+  @spec send(Bamboo.Email.t()) :: Bamboo.Email.t() | {:error, String.t()}
+  def send(%Bamboo.Email{} = email) do
+    limit = Application.get_env(:mailgun_service, :hammer)
+    case Hammer.check_rate("mgs:send_email", limit[:window], limit[:size]) do
+      {:allow, _} ->
+        deliver_now(email)
+      {:deny, _} ->
+        {:error, "Rate limit exceeded, try again later"}
+    end
+  end
+
+  @doc """
   Returns list of available templates.
   Also allows us to use String.to_existing_atom/1 when accepting template param
   and converting it to atom.

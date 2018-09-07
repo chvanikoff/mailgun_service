@@ -41,7 +41,8 @@ defmodule MGS.Mixfile do
       {:bamboo, "~> 1.1"},
       {:amqp, "~> 1.0"},
       {:ranch, "~> 1.5.0", override: true},
-      {:ranch_proxy_protocol, "~> 2.0", override: true}
+      {:ranch_proxy_protocol, "~> 2.0", override: true},
+      {:hammer, "~> 5.0"}
     ]
   end
 end

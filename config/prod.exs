@@ -66,3 +66,7 @@ config :mailgun_service, MGS.Mailer,
   adapter: Bamboo.MailgunAdapter,
   api_key: "",
   domain: ""
+
+config :mailgun_service, :hammer,
+  window: 60_000,
+  size: 20
