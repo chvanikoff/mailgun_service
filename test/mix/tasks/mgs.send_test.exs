@@ -17,7 +17,13 @@ defmodule Mix.Tasks.Mgs.SendTest do
       assert capture_io(fn -> Mix.Tasks.Mgs.Send.run([json]) end) ==
                "Email have been sent to #{@attrs.to}\n"
 
-      expected = [to: [nil: @attrs.to], subject: @attrs.subject, html_body: ~r/<body>.*?welcome.*?<\/body>/si, text_body: ~r/welcome/i]
+      expected = [
+        to: [nil: @attrs.to],
+        subject: @attrs.subject,
+        html_body: ~r/<body>.*?welcome.*?<\/body>/si,
+        text_body: ~r/welcome/i
+      ]
+
       assert_email_delivered_with(expected)
     end
 

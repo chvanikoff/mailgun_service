@@ -26,7 +26,8 @@ defmodule MGS.MailerTest do
     test "Template is set" do
       json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: @attrs.template})
 
-      {:ok, %Bamboo.Email{html_body: html_body, text_body: text_body}} = Mailer.email_from_json(json)
+      {:ok, %Bamboo.Email{html_body: html_body, text_body: text_body}} =
+        Mailer.email_from_json(json)
 
       assert html_body =~ "<body>"
       assert html_body =~ "Welcome"
@@ -39,9 +40,17 @@ defmodule MGS.MailerTest do
       template = "password_reset"
       name = "Roman"
       link = "https://google.com"
-      json = Poison.encode!(%{to: @attrs.to, subject: @attrs.subject, template: template, assigns: %{name: name, link: link}})
 
-      {:ok, %Bamboo.Email{html_body: html_body, text_body: text_body}} = Mailer.email_from_json(json)
+      json =
+        Poison.encode!(%{
+          to: @attrs.to,
+          subject: @attrs.subject,
+          template: template,
+          assigns: %{name: name, link: link}
+        })
+
+      {:ok, %Bamboo.Email{html_body: html_body, text_body: text_body}} =
+        Mailer.email_from_json(json)
 
       assert html_body =~ "<body>"
       assert html_body =~ name

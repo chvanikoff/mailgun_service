@@ -1,27 +1,15 @@
 defmodule MGSWeb.Router do
   use MGSWeb, :router
 
-  pipeline :browser do
-    plug(:accepts, ["html"])
-    plug(:fetch_session)
-    plug(:fetch_flash)
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
-  end
-
   pipeline :api do
     plug(:accepts, ["json"])
   end
 
-  scope "/", MGSWeb do
-    # Use the default browser stack
-    pipe_through(:browser)
+  scope "/api", MGSWeb.API, as: :api do
+    pipe_through(:api)
 
-    get("/", PageController, :index)
+    scope "/v1", V1, as: :v1 do
+      post("/email", EmailController, :send)
+    end
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", MGSWeb do
-  #   pipe_through :api
-  # end
 end
