@@ -23,6 +23,12 @@ config :logger, :console,
 
 config :mailgun_service, MGS.Mailer, from: "test@chvanikoff.com"
 
+config :mailgun_service, :amqp,
+  connection_string: "amqp://guest:guest@localhost",
+  exchange: "mgs_exchange",
+  queue: "mgs_queue",
+  status_queue: "mgs_queue_status"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
