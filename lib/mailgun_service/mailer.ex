@@ -72,8 +72,7 @@ defmodule MGS.Mailer do
            tpl = String.to_atom(tpl) do
         {:ok, render(email, tpl, assigns)}
       else
-        e ->
-          IO.inspect {:ERROR, e}
+        _error ->
           {:error, "Template \"#{template}\" not found"}
       end
     catch
