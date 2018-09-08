@@ -13,10 +13,18 @@ defmodule MGS.QueueWatcher do
 
   @reconnect_timeout 5_000
 
+  @doc """
+  Starts actual queue processing: subscribe to relevant queue and send enqueued emails
+  """
+  @spec start() :: :ok | {:error, :already_started}
   def start() do
     GenServer.call(__MODULE__, :start)
   end
 
+  @doc """
+  Stops the queue processing disconnecting from RabbitMQ
+  """
+  @spec stop() :: :ok | {:error, :already_stopped}
   def stop() do
     GenServer.call(__MODULE__, :stop)
   end

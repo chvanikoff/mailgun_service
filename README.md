@@ -1,5 +1,9 @@
 # MGS
 
+## Environments
+
+In `dev` and `test` environments, emails are not sent to Mailgun, but processed locally. The only env to send real emails is `prod`, and `config/prod.exs` should be updated in order for the processing to work.
+
 ## Templates
 
 Templates are located in `lib/mailgun_service_web/templates/email/` and each template is expected to have 2 versions: text with `.text.eex` extension and html with `.html.eex` extension.
@@ -26,6 +30,8 @@ mix mgs.send "{\"to\":\"recepient@mailserver.tld\",\"subject\":\"testing mail se
 ## Sending email via HTTP endpoint
 
 Authorization chosen for demonstration purpose is Basic auth, with a single username/password combination stored in config `mailgun_service.basic_auth.{username,password}`. All requests to `/api` scope are expected to have basic auth header. By default the combination is `username:password`.
+
+Endpoint: POST `/api/v1/email` expecting json body
 
 ```bash
 curl -H "Content-Type: application/json" -u username:password -d $JSON http://localhost:4000/api/v1/email
@@ -55,8 +61,8 @@ iex> MGS.QueueWatcher.stop()
 
 HTTP API:
 
-`/api/v1/queue/start` - to start the watcher
-`/api/v1/queue/stop` - to stop the watcher
+- GET `/api/v1/queue/start` to start the watcher
+- GET `/api/v1/queue/stop` to stop the watcher
 
 ```bash
 # start
