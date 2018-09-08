@@ -9,11 +9,12 @@ defmodule MGS.QueueWatcherTest do
   }
 
   setup_all do
+    :ok = MGS.QueueWatcher.start()
     config = Application.get_env(:mailgun_service, :amqp) |> Enum.into(%{})
     {:ok, conn} = AMQP.Connection.open(config[:connection_string])
     {:ok, chan} = AMQP.Channel.open(conn)
 
-    on_exit(fn -> :ok = AMQP.Connection.close(conn) end)
+    on_exit(fn -> :ok = MGS.QueueWatcher.stop() end)
 
     {:ok,
      %{

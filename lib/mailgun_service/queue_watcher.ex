@@ -13,14 +13,38 @@ defmodule MGS.QueueWatcher do
 
   @reconnect_timeout 5_000
 
+  def start() do
+    GenServer.call(__MODULE__, :start)
+  end
+
+  def stop() do
+    GenServer.call(__MODULE__, :stop)
+  end
+
   def start_link do
-    GenServer.start_link(__MODULE__, [], [])
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def init(_opts) do
-    config = get_config()
-    {:ok, chan} = connect(config)
-    {:ok, %{chan: chan, config: config}}
+    {:ok, %{chan: nil, config: get_config()}}
+  end
+
+  def handle_call(:start, _from, %{chan: nil} = state) do
+    {:ok, chan} = connect(state.config)
+    {:reply, :ok, %{state | chan: chan}}
+  end
+
+  def handle_call(:start, _from, state) do
+    {:reply, {:error, :already_started}, state}
+  end
+
+  def handle_call(:stop, _from, %{chan: nil} = state) do
+    {:reply, {:error, :already_stopped}, state}
+  end
+
+  def handle_call(:stop, _from, %{chan: chan} = state) do
+    :ok = AMQP.Connection.close(chan.conn)
+    {:reply, :ok, %{state | chan: nil}}
   end
 
   # Confirmation sent by the broker after registering this process as a consumer

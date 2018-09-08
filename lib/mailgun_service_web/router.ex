@@ -11,6 +11,7 @@ defmodule MGSWeb.Router do
 
     scope "/v1", V1, as: :v1 do
       post("/email", EmailController, :send)
+      get("/queue/:status", QueueController, :set_status)
     end
   end
 end
